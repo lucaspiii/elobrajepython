@@ -1,48 +1,360 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#201447"><title>Aprendiendo con el Obraje</title><script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script><style>
-:root{--ink:#21183e;--paper:#fff9e9;--pink:#ff6b9d;--blue:#64d5ff;--yellow:#ffd75e;--green:#6de0a4;--purple:#8d6cff}*{box-sizing:border-box}body{margin:0;background:#17102f;color:var(--paper);font:16px system-ui,sans-serif}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 4vw;background:#25184d;border-bottom:4px solid #100a25;position:sticky;top:0;z-index:5}.brand{font-weight:1000;font-size:clamp(18px,3vw,26px);color:var(--yellow);text-shadow:2px 3px #09051b}.stats{display:flex;gap:10px;flex-wrap:wrap}.pill{background:#382767;border:2px solid #7257bd;border-radius:999px;padding:6px 12px;font-weight:800}.layout{max-width:1250px;margin:auto;padding:22px;display:grid;grid-template-columns:250px 1fr;gap:20px}.side,.panel{background:#281d4d;border:3px solid #59438b;border-radius:20px;box-shadow:0 7px 0 #100a25;padding:17px}.side h3{color:var(--yellow);margin-top:0}.nav{display:grid;gap:8px}.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:900;background:var(--yellow);color:#28183f;box-shadow:0 4px #9a6b28;cursor:pointer}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn.secondary{background:#75dcff;box-shadow:0 4px #277d9b}.btn.pink{background:#ff8cb4;box-shadow:0 4px #9e3d69}.btn:disabled{opacity:.45;cursor:not-allowed}.hero{background:linear-gradient(135deg,#6847b7,#de5799);border-radius:18px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}.hero h1{font-size:clamp(25px,4vw,40px);margin:0 0 6px}.scene{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.avatar{font-size:64px;filter:drop-shadow(0 4px #21183e)}.mascot{background:#fff6d9;color:#2a1c43;border:3px solid #f4c957;border-radius:16px;padding:12px;max-width:340px;font-weight:750}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab{background:#3c2d68;color:white;border:2px solid #7259a9;padding:9px 13px;border-radius:12px;font-weight:800;cursor:pointer}.tab.active{background:var(--blue);color:#20133c}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}.level{padding:13px;border-radius:14px;background:#3a2a68;border:2px solid #7259a9;cursor:pointer;text-align:left;color:white}.level.locked{opacity:.45;cursor:not-allowed}.level strong{display:block;color:var(--yellow)}.editor{width:100%;min-height:160px;resize:vertical;background:#110d24;color:#c9f5d9;border:2px solid #7662a8;border-radius:12px;padding:14px;font:15px/1.6 ui-monospace,monospace}.console{white-space:pre-wrap;background:#100c20;padding:12px;border-radius:12px;min-height:55px;color:#aef5c7;font-family:monospace}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:#c5b8e5}.reward{color:var(--yellow);font-weight:900}.item{background:#392a68;border:2px solid #7259a9;border-radius:14px;padding:12px}.hidden{display:none!important}.progress{height:12px;background:#130d27;border-radius:20px;overflow:hidden}.progress>i{display:block;height:100%;background:linear-gradient(90deg,#6de0a4,#64d5ff);width:0}.foot{opacity:.7;text-align:center;padding:20px;font-size:12px}.confetti{position:fixed;inset:0;pointer-events:none;z-index:10;overflow:hidden}.piece{position:absolute;top:-20px;width:10px;height:16px;animation:fall 2.8s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(900deg);opacity:.2}}.badge{display:inline-block;padding:4px 9px;border-radius:8px;background:#533d89;color:#ffe58a;font-size:12px;font-weight:900}@media(max-width:760px){.layout{grid-template-columns:1fr;padding:12px}.side{order:2}.top{align-items:flex-start;flex-direction:column}.side .nav{grid-template-columns:repeat(2,1fr)}}
-</style></head><body><header class="top"><div class="brand">🎮 APRENDIENDO CON EL OBRAJE</div><div class="stats"><span class="pill">⭐ <b id="xp">0</b> XP</span><span class="pill">🪙 $<b id="coins">0</b></span><span class="pill">🏅 Nivel <b id="rank">1</b></span></div></header><div class="layout"><aside class="side"><h3>🗺️ Tu aventura</h3><div class="nav"><button class="btn" onclick="show('map')">Mapa de niveles</button><button class="btn secondary" onclick="show('character')">Personaje</button><button class="btn pink" onclick="show('pets')">Mascotas</button><button class="btn secondary" onclick="show('shop')">Tienda</button><button class="btn" onclick="show('collection')">Colección</button><button class="btn pink" onclick="show('stats')">Mi progreso</button></div><hr style="border-color:#59438b;margin:18px 0"><p class="muted">🔊 Efectos: <button class="btn secondary" id="sound" onclick="toggleSound()">Activados</button></p><p class="muted">🎵 Música: <button class="btn secondary" id="music" onclick="toggleMusic()">Activada</button></p><p class="muted">Tu avance se guarda automáticamente en este navegador.</p><button class="btn pink" onclick="resetAll()">Reiniciar todos los niveles</button></aside><main><section class="hero"><div class="scene"><div><span class="badge">AVENTURA PYTHON</span><h1>¡Cada línea te hace avanzar!</h1><p>Aprendé Python, ganá recompensas y construí tus propios juegos.</p></div><div class="avatar" id="heroAvatar">🧑‍💻</div></div><div class="row"><div class="mascot" id="mascot">🤖 ¡Hola! Soy MateBot, tu ayudante. Si algo sale mal, te voy a explicar cómo corregirlo.</div><div class="avatar" id="petAvatar">🦫</div></div></section><div class="tabs"><button class="tab active" id="tab-map" onclick="show('map')">🗺️ Mapa</button><button class="tab" id="tab-play" onclick="show('play')">💻 Practicar</button><button class="tab" id="tab-shop" onclick="show('shop')">🛍️ Tienda</button></div>
-<section id="map" class="panel"><h2>🗺️ Mapa del Obraje</h2><p class="muted">16 mundos · 32 desafíos · desde tu primer print() hasta crear un mini juego.</p><div class="progress"><i id="bar"></i></div><p id="progressText" class="muted"></p><div class="grid" id="levels"></div></section>
-<section id="play" class="panel hidden"><div class="row" style="justify-content:space-between"><div><span class="badge" id="levelBadge">NIVEL 1</span><h2 id="lessonTitle">Primeros pasos</h2></div><span class="badge" id="world">Dormitorio</span></div><p id="lessonDesc"></p><div class="item"><b>🎯 Tu misión</b><p id="task"></p></div><h3>⌨️ Tu código Python</h3><textarea id="code" class="editor" spellcheck="false"></textarea><div class="row" style="margin:12px 0"><button class="btn" onclick="runCode()" id="run">▶ Ejecutar y verificar</button><button class="btn secondary" onclick="resetCode()">Restaurar ejemplo</button><button class="btn pink" onclick="hint()">💡 Pista</button></div><h3>🖥️ Consola</h3><div id="console" class="console">Cargando Python…</div><p id="feedback" class="muted"></p><div class="row"><button class="btn secondary" onclick="previousLesson()">← Anterior</button><button class="btn" onclick="nextLesson()" id="next">Siguiente desafío →</button></div></section>
-<section id="character" class="panel hidden"><h2>🧑‍🚀 Tu personaje</h2><div class="item"><div class="avatar" id="charBig">🧑‍💻</div><h3 id="charName">Byte</h3><p class="muted">Elegí tu compañero de aventura. Algunos personajes se desbloquean jugando.</p></div><div class="grid" id="characters"></div><h3>🎨 Personalización</h3><div class="row"><label>Cabello <select id="hair" onchange="customize()"><option>Oscuro</option><option>Castaño</option><option>Rubio</option><option>Violeta</option></select></label><label>Ropa <select id="clothes" onchange="customize()"><option>Celeste</option><option>Argentina</option><option>Verde</option><option>Violeta</option><option>Roja</option></select></label><label>Accesorio <select id="accessory" onchange="customize()"><option>Ninguno</option><option>Gorra</option><option>Lentes</option><option>Auriculares</option></select></label></div><p id="customPreview" class="muted">Tu estilo se guarda automáticamente.</p></section>
-<section id="pets" class="panel hidden"><h2>🐾 Mascotas (todas gratuitas)</h2><p class="muted">Elegí una mascota, cambiale el nombre y probá sus colores. No cuestan monedas.</p><div class="grid" id="petChoices"></div><label>Nombre de tu mascota <input id="petName" maxlength="18" placeholder="Ej. Chispa" style="padding:9px;border-radius:8px" onchange="savePetName()"></label></section>
-<section id="shop" class="panel hidden"><h2>🛍️ Tienda del Obraje</h2><p class="muted">Los pesos son monedas ficticias del juego. No hay compras con dinero real.</p><div class="grid" id="shopItems"></div></section>
-<section id="collection" class="panel hidden"><h2>🎁 Álbum de colección</h2><p class="muted">Tus premios, medallas y personajes desbloqueados.</p><div class="grid" id="album"></div></section>
-<section id="stats" class="panel hidden"><h2>📊 Tu progreso</h2><div class="grid" id="statistics"></div><h3>🏅 Medallas</h3><div id="medals" class="grid"></div></section>
-</main></div><div class="foot">Aprendiendo con el Obraje · Proyecto educativo · El progreso de esta versión se guarda en este dispositivo.</div><div id="confetti" class="confetti"></div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aprendiendo con el Obraje</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+<style>
+:root{--bg:#17152c;--panel:#272443;--purple:#8b5cf6;--pink:#ec4899;--yellow:#facc15;--green:#4ade80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:white;font-family:Arial,sans-serif}
+header{padding:18px;text-align:center;background:#211e3b;border-bottom:3px solid var(--purple)}
+h1{margin:0;color:#facc15;font-size:clamp(24px,5vw,36px)}
+header p{margin:7px 0 0;color:#c4b5fd}
+.stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:14px}
+.stat{background:var(--panel);padding:10px 16px;border-radius:12px}
+main{max-width:1050px;margin:auto;padding:16px}
+.panel{background:var(--panel);border:2px solid #48416d;border-radius:18px;padding:20px;margin-bottom:18px}
+h2{color:#facc15;margin-top:0}
+button{border:0;border-radius:10px;padding:11px 16px;font-weight:bold;cursor:pointer;background:var(--purple);color:white;margin:4px}
+button:hover{filter:brightness(1.2)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:var(--pink)}
+.green{background:#16a34a}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.level{background:#393456;padding:15px;border-radius:12px;text-align:center}
+.level.done{border:2px solid var(--green)}
+.level.locked{opacity:.4}
+#practice{display:none}
+textarea{width:100%;min-height:230px;background:#111827;color:#d1fae5;border:2px solid #64748b;border-radius:12px;padding:15px;font:15px monospace;resize:vertical}
+#output{background:#111827;padding:14px;border-radius:10px;min-height:45px;white-space:pre-wrap;font-family:monospace;overflow-wrap:anywhere}
+#feedback{padding:14px;border-radius:10px;background:#393456;margin-top:12px}
+#mascot{font-size:38px}
+.small{color:#c4b5fd;font-size:14px}
+footer{text-align:center;color:#a5a0c9;padding:20px}
+#confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+.piece{position:absolute;top:-20px;width:10px;height:16px;animation:fall 2.8s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(900deg);opacity:0}}
+</style>
+</head>
+<body>
+<header>
+<h1>🐍 Aprendiendo con el Obraje</h1>
+<p>¡Convertite en un genio de Python!</p>
+</header>
+
+<div class="stats">
+<div class="stat">⭐ XP: <b id="xp">0</b></div>
+<div class="stat">🪙 Monedas: <b id="coins">0</b></div>
+<div class="stat">🏅 Ejercicios: <b id="completed">0</b>/32</div>
+</div>
+
+<main>
+<section id="map" class="panel">
+<h2>🗺️ Mapa de aprendizaje</h2>
+<p>Elegí un nivel desbloqueado y empezá a programar.</p>
+<div id="levels" class="levels"></div>
+<br>
+<button class="primary" onclick="resetAll()">🔄 Reiniciar todos los niveles</button>
+</section>
+
+<section id="practice" class="panel">
+<button onclick="showMap()">⬅ Volver al mapa</button>
+<h2 id="levelTitle">Nivel</h2>
+<p id="exerciseNumber" class="small"></p>
+<h3 id="objective">Objetivo</h3>
+<p id="description"></p>
+
+<div class="panel" style="background:#393456">
+<div id="mascot">🤖</div>
+<b>MateBot:</b>
+<span id="hint">¡Vamos a programar!</span>
+</div>
+
+<label for="code"><b>💻 Tu código Python:</b></label>
+<textarea id="code" spellcheck="false" placeholder="# Escribí tu código Python acá..."></textarea>
+<br>
+<button class="green" id="verify" onclick="verifyCode()">▶ Verificar código</button>
+<button onclick="clearCode()">🧹 Borrar código</button>
+
+<h3>📟 Resultado</h3>
+<div id="output">Todavía no ejecutaste tu programa.</div>
+<div id="feedback">¡Estoy listo para ayudarte!</div>
+<br>
+<button id="next" class="primary" onclick="nextExercise()" style="display:none">Siguiente ejercicio ➜</button>
+</section>
+</main>
+
+<div id="confetti"></div>
+<footer>Aprendiendo con el Obraje · Programación Python 🐍</footer>
+
 <script>
-const lessons=[{"level": 1, "name": "Primeros pasos", "bg": "Dormitorio", "topic": "print()", "desc": "Aprendé a mostrar mensajes en pantalla.", "task": "Escribí un programa que practique print(). Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "print(\"Hola, Obraje\")", "expected": "Hola, Obraje", "needle": "print"}, {"level": 1, "name": "Primeros pasos · desafío", "bg": "Dormitorio", "topic": "print()", "desc": "Aprendé a mostrar mensajes en pantalla.", "task": "Resolvé este segundo desafío sobre print(). Podés usar el ejemplo como punto de partida.", "starter": "print(\"¡Estoy aprendiendo Python!\")", "expected": "¡Estoy aprendiendo Python!", "needle": "print"}, {"level": 2, "name": "Variables", "bg": "Escuela", "topic": "variables", "desc": "Guardá datos y volvé a utilizarlos.", "task": "Escribí un programa que practique variables. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "nombre = \"Tilo\"\nprint(nombre)", "expected": "Tilo", "needle": "nombre"}, {"level": 2, "name": "Variables · desafío", "bg": "Escuela", "topic": "variables", "desc": "Guardá datos y volvé a utilizarlos.", "task": "Resolvé este segundo desafío sobre variables. Podés usar el ejemplo como punto de partida.", "starter": "puntaje = 25\nprint(puntaje)", "expected": "25", "needle": "puntaje"}, {"level": 3, "name": "Números y operaciones", "bg": "Biblioteca", "topic": "operaciones", "desc": "Usá números y operadores para resolver cuentas.", "task": "Escribí un programa que practique operaciones. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "puntos = 12\nprint(puntos + 8)", "expected": "20", "needle": "puntos"}, {"level": 3, "name": "Números y operaciones · desafío", "bg": "Biblioteca", "topic": "operaciones", "desc": "Usá números y operadores para resolver cuentas.", "task": "Resolvé este segundo desafío sobre operaciones. Podés usar el ejemplo como punto de partida.", "starter": "print(9 * 4)", "expected": "36", "needle": "*"}, {"level": 4, "name": "Texto y cadenas", "bg": "Plaza del pueblo", "topic": "cadenas", "desc": "Uní textos y mostrá mensajes personalizados.", "task": "Escribí un programa que practique cadenas. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "nombre = \"Byte\"\nprint(\"Hola \" + nombre)", "expected": "Hola Byte", "needle": "+"}, {"level": 4, "name": "Texto y cadenas · desafío", "bg": "Plaza del pueblo", "topic": "cadenas", "desc": "Uní textos y mostrá mensajes personalizados.", "task": "Resolvé este segundo desafío sobre cadenas. Podés usar el ejemplo como punto de partida.", "starter": "print(\"Obra\" + \"je\")", "expected": "Obraje", "needle": "+"}, {"level": 5, "name": "Decisiones", "bg": "Taller", "topic": "if / else", "desc": "Hacé que el programa elija según una condición.", "task": "Escribí un programa que practique if / else. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "edad = 15\nif edad >= 13:\n    print(\"Adelante\")\nelse:\n    print(\"Espera\")", "expected": "Adelante", "needle": "if"}, {"level": 5, "name": "Decisiones · desafío", "bg": "Taller", "topic": "if / else", "desc": "Hacé que el programa elija según una condición.", "task": "Resolvé este segundo desafío sobre if / else. Podés usar el ejemplo como punto de partida.", "starter": "temperatura = 22\nif temperatura > 20:\n    print(\"Calido\")", "expected": "Calido", "needle": "if"}, {"level": 6, "name": "Comparaciones", "bg": "Laboratorio", "topic": "==, !=, >, <", "desc": "Compará valores para tomar decisiones.", "task": "Escribí un programa que practique ==, !=, >, <. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "clave = 7\nprint(clave == 7)", "expected": "True", "needle": "=="}, {"level": 6, "name": "Comparaciones · desafío", "bg": "Laboratorio", "topic": "==, !=, >, <", "desc": "Compará valores para tomar decisiones.", "task": "Resolvé este segundo desafío sobre ==, !=, >, <. Podés usar el ejemplo como punto de partida.", "starter": "print(10 != 5)", "expected": "True", "needle": "!="}, {"level": 7, "name": "Bucles for", "bg": "Patio del Obraje", "topic": "for", "desc": "Repetí instrucciones una cantidad de veces.", "task": "Escribí un programa que practique for. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "for i in range(3):\n    print(\"Python\")", "expected": "Python\nPython\nPython", "needle": "for"}, {"level": 7, "name": "Bucles for · desafío", "bg": "Patio del Obraje", "topic": "for", "desc": "Repetí instrucciones una cantidad de veces.", "task": "Resolvé este segundo desafío sobre for. Podés usar el ejemplo como punto de partida.", "starter": "for numero in range(1, 4):\n    print(numero)", "expected": "1\n2\n3", "needle": "for"}, {"level": 8, "name": "Bucles while", "bg": "Sierras de Córdoba", "topic": "while", "desc": "Repetí mientras una condición sea verdadera.", "task": "Escribí un programa que practique while. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "n = 1\nwhile n <= 3:\n    print(n)\n    n += 1", "expected": "1\n2\n3", "needle": "while"}, {"level": 8, "name": "Bucles while · desafío", "bg": "Sierras de Córdoba", "topic": "while", "desc": "Repetí mientras una condición sea verdadera.", "task": "Resolvé este segundo desafío sobre while. Podés usar el ejemplo como punto de partida.", "starter": "contador = 2\nwhile contador > 0:\n    print(contador)\n    contador -= 1", "expected": "2\n1", "needle": "while"}, {"level": 9, "name": "Listas", "bg": "Ciudad tecnológica", "topic": "listas", "desc": "Guardá varios elementos en una lista.", "task": "Escribí un programa que practique listas. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "frutas = [\"pera\", \"uva\"]\nprint(frutas[0])", "expected": "pera", "needle": "["}, {"level": 9, "name": "Listas · desafío", "bg": "Ciudad tecnológica", "topic": "listas", "desc": "Guardá varios elementos en una lista.", "task": "Resolvé este segundo desafío sobre listas. Podés usar el ejemplo como punto de partida.", "starter": "equipo = [\"Sol\", \"Luna\"]\nprint(len(equipo))", "expected": "2", "needle": "["}, {"level": 10, "name": "Funciones", "bg": "Estadio argentino", "topic": "def", "desc": "Creá funciones para reutilizar instrucciones.", "task": "Escribí un programa que practique def. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "def saludo():\n    print(\"Vamos\")\nsaludo()", "expected": "Vamos", "needle": "def"}, {"level": 10, "name": "Funciones · desafío", "bg": "Estadio argentino", "topic": "def", "desc": "Creá funciones para reutilizar instrucciones.", "task": "Resolvé este segundo desafío sobre def. Podés usar el ejemplo como punto de partida.", "starter": "def sumar():\n    print(4 + 5)\nsumar()", "expected": "9", "needle": "def"}, {"level": 11, "name": "Parámetros", "bg": "Feria de inventos", "topic": "parámetros", "desc": "Enviá información a una función.", "task": "Escribí un programa que practique parámetros. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "def doble(n):\n    print(n * 2)\ndoble(6)", "expected": "12", "needle": "def"}, {"level": 11, "name": "Parámetros · desafío", "bg": "Feria de inventos", "topic": "parámetros", "desc": "Enviá información a una función.", "task": "Resolvé este segundo desafío sobre parámetros. Podés usar el ejemplo como punto de partida.", "starter": "def triple(n):\n    print(n * 3)\ntriple(4)", "expected": "12", "needle": "def"}, {"level": 12, "name": "Diccionarios", "bg": "Museo del Obraje", "topic": "diccionarios", "desc": "Organizá datos con claves y valores.", "task": "Escribí un programa que practique diccionarios. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "jugador = {\"nombre\": \"Luz\"}\nprint(jugador[\"nombre\"])", "expected": "Luz", "needle": "{"}, {"level": 12, "name": "Diccionarios · desafío", "bg": "Museo del Obraje", "topic": "diccionarios", "desc": "Organizá datos con claves y valores.", "task": "Resolvé este segundo desafío sobre diccionarios. Podés usar el ejemplo como punto de partida.", "starter": "dato = {\"nivel\": 16}\nprint(dato[\"nivel\"])", "expected": "16", "needle": "{"}, {"level": 13, "name": "Tuplas y conjuntos", "bg": "Bosque pixelado", "topic": "tuplas", "desc": "Conocé otras formas de agrupar datos.", "task": "Escribí un programa que practique tuplas. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "colores = (\"rojo\", \"azul\")\nprint(colores[1])", "expected": "azul", "needle": "("}, {"level": 13, "name": "Tuplas y conjuntos · desafío", "bg": "Bosque pixelado", "topic": "tuplas", "desc": "Conocé otras formas de agrupar datos.", "task": "Resolvé este segundo desafío sobre tuplas. Podés usar el ejemplo como punto de partida.", "starter": "numeros = {2, 4, 6}\nprint(4 in numeros)", "expected": "True", "needle": "in"}, {"level": 14, "name": "Módulos", "bg": "Observatorio", "topic": "import", "desc": "Aprovechá herramientas que vienen con Python.", "task": "Escribí un programa que practique import. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "import math\nprint(math.sqrt(81))", "expected": "9.0", "needle": "import"}, {"level": 14, "name": "Módulos · desafío", "bg": "Observatorio", "topic": "import", "desc": "Aprovechá herramientas que vienen con Python.", "task": "Resolvé este segundo desafío sobre import. Podés usar el ejemplo como punto de partida.", "starter": "import random\nprint(random.choice([\"A\"]))", "expected": "A", "needle": "import"}, {"level": 15, "name": "Manejo de errores", "bg": "Estación espacial", "topic": "try / except", "desc": "Prepará programas que respondan ante errores.", "task": "Escribí un programa que practique try / except. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "try:\n    print(10 / 0)\nexcept ZeroDivisionError:\n    print(\"No se puede\")", "expected": "No se puede", "needle": "except"}, {"level": 15, "name": "Manejo de errores · desafío", "bg": "Estación espacial", "topic": "try / except", "desc": "Prepará programas que respondan ante errores.", "task": "Resolvé este segundo desafío sobre try / except. Podés usar el ejemplo como punto de partida.", "starter": "try:\n    int(\"hola\")\nexcept ValueError:\n    print(\"Dato invalido\")", "expected": "Dato invalido", "needle": "except"}, {"level": 16, "name": "Proyecto: mini juego", "bg": "Arcade del Obraje", "topic": "proyecto", "desc": "Combiná variables, decisiones y funciones para crear un juego.", "task": "Escribí un programa que practique proyecto. Ejecutá el ejemplo y observá la salida. Después podés modificarlo y experimentar.", "starter": "vidas = 3\nif vidas > 0:\n    print(\"¡Partida iniciada!\")", "expected": "¡Partida iniciada!", "needle": "if"}, {"level": 16, "name": "Proyecto: mini juego · desafío", "bg": "Arcade del Obraje", "topic": "proyecto", "desc": "Combiná variables, decisiones y funciones para crear un juego.", "task": "Resolvé este segundo desafío sobre proyecto. Podés usar el ejemplo como punto de partida.", "starter": "secreto = 4\nintento = 4\nif intento == secreto:\n    print(\"¡Ganaste!\")", "expected": "¡Ganaste!", "needle": "if"}];
-const chars=[['Byte','🧑‍💻',0],['Chispa','🧑‍🚀',0],['Pixel','🧝',0],['Tilo','🧑‍🎨',0],['Rahlf el Demoledor','🦾',450],['Carpi','🧢',350],['MateBot','🤖',500],['Soledad Pastorutti','🧉',600],['Nébula','👩‍🚀',700],['Messi','🇦🇷',-1]];
-const pets=[['Carpincho','🦫',['Marrón','Dorado','Gris']],['Shar Pei','🐶',['Miel','Crema','Chocolate']],['Gato','🐱',['Naranja','Negro','Blanco','Gris']]];
-const bgColors=['#6142a5','#3977a5','#426b9b','#b15d88','#a45d38','#397c87','#4e8a61','#5284a8','#4e4c9b','#267c9b','#98623e','#65538c','#3f8a70','#3b639e','#4e558c','#a34c83'];
-const KEY='obraje-save-v3';let state=load(),py=null,ready=false,current=0,sound=true,musicOn=true,musicTimer=null,audioCtx=null;
-function fresh(){return {hair:'Oscuro',clothes:'Celeste',accessory:'Ninguno',done:[],unlocked:0,xp:0,coins:0,character:'Byte',owned:['Byte','Chispa','Pixel','Tilo'],pet:'Carpincho',petName:'',petColor:0,items:[],medals:[],streak:0}}
-function load(){try{return {...fresh(),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return fresh()}}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));updateStats()}
-function updateStats(){document.getElementById('xp').textContent=state.xp;document.getElementById('coins').textContent=state.coins;document.getElementById('rank').textContent=1+Math.floor(state.xp/100);let p=Math.round(state.done.length/lessons.length*100);document.getElementById('bar').style.width=p+'%';document.getElementById('progressText').textContent=`${state.done.length}/${lessons.length} desafíos completados (${p}%)`}
-function show(id){document.querySelectorAll('main>section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));let tab=document.getElementById('tab-'+id);if(tab)tab.classList.add('active');if(id==='character')renderCharacters();if(id==='pets')renderPets();if(id==='shop')renderShop();if(id==='collection')renderAlbum();if(id==='stats')renderStats()}
-function renderMap(){let el=document.getElementById('levels');el.innerHTML='';for(let i=1;i<=16;i++){let done=state.done.includes(i*2-2)&&state.done.includes(i*2-1),unlocked=i<=Math.floor(state.unlocked/2)+1;let b=document.createElement('button');b.className='level '+(!unlocked?'locked':'');b.disabled=!unlocked;b.style.background=bgColors[i-1];b.innerHTML=`<strong>${done?'⭐':unlocked?'🔓':'🔒'} NIVEL ${i}</strong>${lessons[(i-1)*2].name}<small style="display:block">${lessons[(i-1)*2].bg}</small>`;b.onclick=()=>loadLesson((i-1)*2);el.append(b)}updateStats()}
-function loadLesson(i){current=Math.max(0,Math.min(i,lessons.length-1));let l=lessons[current];document.getElementById('lessonTitle').textContent=l.name;document.getElementById('levelBadge').textContent='NIVEL '+l.level+' · DESAFÍO '+(current%2+1);document.getElementById('world').textContent='📍 '+l.bg;document.getElementById('task').textContent=l.task;document.getElementById('lessonDesc').textContent=l.desc;document.getElementById('code').value='# Escribí tu solución aquí.\n';document.getElementById('console').textContent=ready?'Python listo. ¡A programar!':'Cargando Python…';document.getElementById('feedback').textContent='';document.getElementById('next').disabled=!state.done.includes(current);document.querySelector('.hero').style.background=`linear-gradient(135deg,${bgColors[l.level-1]},#de5799)`;show('play')}
-function resetCode(){document.getElementById('code').value='# Escribí tu solución aquí.
-'}{document.getElementById('code').value='# Escribí tu solución aquí.
-'}
-function hint(){let l=lessons[current];document.getElementById('mascot').textContent='🤖 Pista: fijate en el concepto '+l.topic+'. Revisá la indentación, los paréntesis y que la salida coincida con lo que pide el desafío.';document.getElementById('feedback').textContent='Pista activada. ¡Probá una idea y ejecutala!'}
-async function runCode(){if(!ready||!py)return;let code=document.getElementById('code').value,lesson=lessons[current],out=[];let btn=document.getElementById('run');btn.disabled=true;document.getElementById('console').textContent='Ejecutando…';try{py.setStdout({batched:s=>out.push(s)});await py.runPythonAsync(code);let result=out.join('').replace(/\r/g,'').trimEnd();document.getElementById('console').textContent=result||'(Sin salida)';if(!result){throw Error('Tu programa no mostró ningún resultado. Probá usando print() para mostrarlo.')};if(result!==lesson.expected){document.getElementById('feedback').textContent='La salida todavía no coincide. Revisá el resultado y volvé a intentar.';document.getElementById('mascot').textContent='🤖 ¡Vamos paso a paso! Tu código se ejecutó, pero el resultado no es el esperado. Compará lo que aparece en la consola con la consigna. Si hay varias líneas, revisá el orden.';return}if(!code.includes(lesson.needle)){document.getElementById('feedback').textContent='¡La salida está bien! Ahora asegurate de usar el concepto que practica este desafío.';document.getElementById('mascot').textContent='🤖 ¡Casi! Lograste la salida, pero necesitamos practicar '+lesson.topic+'. Fijate si realmente usaste ese recurso en tu código.';return}let first=!state.done.includes(current);if(first){state.done.push(current);state.done.sort((a,b)=>a-b);state.unlocked=Math.max(state.unlocked,Math.min(current+1,lessons.length-1));state.xp+=25;state.coins+=30;state.streak++;if(current%2===1){state.coins+=40;levelReward(lesson.level)}}document.getElementById('feedback').textContent='🎉 ¡Correcto! '+(first?'+25 XP y +30 pesos virtuales.':'Ya habías completado este desafío.');document.getElementById('mascot').textContent='🤖 ¡GENIO! Lo resolviste. '+(first?'Ganaste experiencia y pesos del juego.':'Podés seguir practicando para mejorar.');document.getElementById('next').disabled=false;save();renderMap();if(first&&current%2===1)celebrate();}catch(e){document.getElementById('console').textContent=e.message;document.getElementById('feedback').textContent='Hubo un error. Leé la explicación de MateBot y corregí el código.';let msg=e.message||'';let advice=msg.includes('SyntaxError')?'Parece que hay un error de sintaxis. Revisá paréntesis, comillas, dos puntos y la indentación.':msg.includes('NameError')?'Python no reconoce un nombre. Revisá si escribiste bien el nombre de la variable o función.':msg.includes('IndentationError')?'La indentación es importante en Python. Alineá las instrucciones que pertenecen al mismo bloque.':msg.includes('ZeroDivisionError')?'No se puede dividir un número por cero. Revisá el divisor.':'Leé el mensaje de error de la consola, ubicá la línea indicada y revisá los nombres, símbolos y espacios.';document.getElementById('mascot').textContent='🤖 BURRO no, ¡aprendiz en acción! '+advice}finally{btn.disabled=false}}
-function levelReward(level){if(level===10){if(!state.owned.includes('Messi'))state.owned.push('Messi');document.getElementById('mascot').textContent='🇦🇷 ¡RECOMPENSA ESPECIAL! Desbloqueaste a Messi con la camiseta argentina número 10.'}else{let prize=['Gorra pixelada','Remera del Obraje','Lentes cuadrados','Buzo programador','Mochila de aventura','Pañuelo celeste y blanco','Pin de Python','Cuaderno secreto'][level%8];if(!state.items.includes(prize))state.items.push(prize)}}
-function celebrate(){let box=document.getElementById('confetti');box.innerHTML='';for(let i=0;i<120;i++){let p=document.createElement('i');p.className='piece';p.style.left=Math.random()*100+'%';p.style.background=['#ffdf5d','#ff6b9d','#64d5ff','#6de0a4','#b28cff'][i%5];p.style.animationDelay=Math.random()*.8+'s';box.append(p)}setTimeout(()=>box.innerHTML='',3500);if(sound)beep()}
-function beep(){try{let c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=660;g.gain.value=.06;o.start();o.frequency.setValueAtTime(880,c.currentTime+.12);o.stop(c.currentTime+.28)}catch{}}
-function toggleSound(){sound=!sound;document.getElementById('sound').textContent=sound?'Activados':'Apagados'}
-function customize(){state.hair=document.getElementById('hair').value;state.clothes=document.getElementById('clothes').value;state.accessory=document.getElementById('accessory').value;save();document.getElementById('customPreview').textContent=`Estilo: cabello ${state.hair.toLowerCase()}, ropa ${state.clothes.toLowerCase()}, accesorio ${state.accessory.toLowerCase()}.`;document.getElementById('heroAvatar').style.filter=state.hair==='Violeta'?'hue-rotate(55deg)':state.hair==='Rubio'?'hue-rotate(25deg)':state.hair==='Castaño'?'hue-rotate(-15deg)':'none'}
-function toggleMusic(){musicOn=!musicOn;document.getElementById('music').textContent=musicOn?'Activada':'Apagada';if(musicOn)startMusic();else if(musicTimer){clearInterval(musicTimer);musicTimer=null}}
-function startMusic(){if(!musicOn||musicTimer)return;try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();let notes=[261.63,329.63,392,329.63],i=0;const play=()=>{if(!musicOn)return;let o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=notes[i++%notes.length];g.gain.setValueAtTime(.0001,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.018,audioCtx.currentTime+.06);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.42);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.45)};play();musicTimer=setInterval(play,520)}catch{}}
-document.addEventListener('pointerdown',()=>{if(musicOn)startMusic()},{once:true});
-function previousLesson(){loadLesson(Math.max(0,current-1))}function nextLesson(){if(state.done.includes(current))loadLesson(Math.min(lessons.length-1,current+1))}
-function renderCharacters(){document.getElementById('hair').value=state.hair||'Oscuro';document.getElementById('clothes').value=state.clothes||'Celeste';document.getElementById('accessory').value=state.accessory||'Ninguno';customize();document.getElementById('charBig').textContent=chars.find(c=>c[0]===state.character)?.[1]||'🧑‍💻';document.getElementById('charName').textContent=state.character;document.getElementById('heroAvatar').textContent=chars.find(c=>c[0]===state.character)?.[1]||'🧑‍💻';let box=document.getElementById('characters');box.innerHTML='';chars.forEach(c=>{let owned=state.owned.includes(c[0]),b=document.createElement('button');b.className='item';b.innerHTML=`<div class="avatar">${c[1]}</div><b>${c[0]}</b><p>${owned?'Desbloqueado':c[2]<0?'Recompensa nivel 10':c[2]+' pesos'}</p>`;b.disabled=!owned;b.onclick=()=>{state.character=c[0];save();renderCharacters()};box.append(b)})}
-function renderPets(){let box=document.getElementById('petChoices');box.innerHTML='';pets.forEach(p=>{let b=document.createElement('div');b.className='item';b.innerHTML=`<div class="avatar">${p[1]}</div><b>${p[0]}</b><p>${p[2].map((x,i)=>`<button class="btn secondary" onclick="petColor('${p[0]}',${i})">${x}</button>`).join(' ')}</p><button class="btn" onclick="choosePet('${p[0]}','${p[1]}')">Elegir gratis</button>`;box.append(b)});document.getElementById('petName').value=state.petName;document.getElementById('petAvatar').textContent=pets.find(p=>p[0]===state.pet)?.[1]||'🐾';document.getElementById('petAvatar').style.filter=['none','sepia(.55) saturate(1.5)','grayscale(.8)','hue-rotate(45deg)'][state.petColor||0]}
-function choosePet(n,emoji){state.pet=n;state.petEmoji=emoji;save();renderPets()}function petColor(n,i){state.pet=n;state.petColor=i;save();renderPets()}function savePetName(){state.petName=document.getElementById('petName').value;save()}
-function renderShop(){let box=document.getElementById('shopItems');box.innerHTML='';chars.filter(c=>c[2]>0).forEach(c=>{let b=document.createElement('div');b.className='item';b.innerHTML=`<div class="avatar">${c[1]}</div><b>${c[0]}</b><p>${c[2]} pesos virtuales</p><button class="btn" ${state.owned.includes(c[0])?'disabled':''} onclick="buy('${c[0]}',${c[2]})">${state.owned.includes(c[0])?'Comprado':'Desbloquear'}</button>`;box.append(b)});if(!box.children.length)box.textContent='¡Ya desbloqueaste todos los personajes de la tienda.'}
-function buy(n,cost){if(state.coins<cost){document.getElementById('mascot').textContent='🤖 Todavía te faltan pesos virtuales. ¡Completá desafíos para ganar más!';return}state.coins-=cost;state.owned.push(n);save();renderShop()}
-function renderAlbum(){let box=document.getElementById('album');box.innerHTML='';state.owned.forEach(n=>{let c=chars.find(x=>x[0]===n);box.innerHTML+=`<div class="item"><div class="avatar">${c?.[1]||'🎁'}</div><b>${n}</b></div>`});state.items.forEach(n=>box.innerHTML+=`<div class="item">🎁 <b>${n}</b></div>`);if(!state.items.length)box.innerHTML+='<div class="item">Los premios de nivel aparecerán acá.</div>'}
-function renderStats(){document.getElementById('statistics').innerHTML=[['Desafíos',state.done.length+'/32'],['Experiencia',state.xp+' XP'],['Pesos virtuales','$'+state.coins],['Racha',state.streak+' aciertos nuevos']].map(x=>`<div class="item"><b>${x[0]}</b><h2>${x[1]}</h2></div>`).join('');document.getElementById('medals').innerHTML=['Primer programa','Cinco desafíos','Diez desafíos','Primer mundo','Creador de juegos'].map((m,i)=>`<div class="item">${state.done.length>=[1,5,10,2,32][i]?'🏅':'🔒'} ${m}</div>`).join('')}
-function resetAll(){if(confirm('¿Seguro que querés reiniciar todos los niveles y recompensas? Esta acción no se puede deshacer.')){state=fresh();save();renderMap();renderCharacters();loadLesson(0)}}
-async function init(){try{py=await loadPyodide();ready=true;document.getElementById('console').textContent='Python listo. ¡Elegí un desafío y programá!';}catch(e){document.getElementById('console').textContent='No se pudo cargar Python. Revisá tu conexión y recargá la página.'}}renderMap();renderCharacters();renderPets();loadLesson(0);init();
-</script></body></html>
+const exercises = [
+[
+["Mostrar un mensaje","Usá print() para mostrar exactamente: Hola mundo","Hola mundo","print"],
+["Mostrar tu nombre","Usá print() para mostrar: Me gusta Python","Me gusta Python","print"]
+],
+[
+["Crear una variable","Creá una variable llamada nombre con el texto Ana y mostralo.","Ana","nombre"],
+["Guardar una edad","Creá una variable edad con el número 15 y mostralo.","15","edad"]
+],
+[
+["Sumar números","Creá dos números y mostrá su suma. El resultado debe ser 15.","15","+"],
+["Multiplicar","Multiplicá 5 por 6 y mostrá el resultado.","30","*"]
+],
+[
+["Unir textos","Guardá tu nombre en una variable y mostrá Hola seguido de tu nombre.","Hola Lucas","+"],
+["Calcular una cuenta","Calculá 20 dividido 4 y mostrá el resultado.","5.0","/"]
+],
+[
+["Tomar decisiones","Creá una variable edad con valor 18. Usá if para mostrar Mayor.","Mayor","if"],
+["Comparar números","Si numero es igual a 10, mostrá Correcto usando if.","Correcto","=="]
+],
+[
+["Usar else","Si temperatura es menor que 10, mostrá Frio. Si no, mostrá Calor.","Frio","else"],
+["Usar elif","Si nota es 10, mostrá Excelente. Si no, mostrá Otra nota.","Excelente","elif"]
+],
+[
+["Contar con for","Usá un bucle for para mostrar los números del 1 al 3, uno por línea.","1\n2\n3","for"],
+["Recorrer una lista","Recorré la lista frutas con un for y mostrá cada fruta.","manzana\npera\nbanana","for"]
+],
+[
+["Usar while","Usá while para mostrar los números 1, 2 y 3.","1\n2\n3","while"],
+["Contar hacia atrás","Usá while para mostrar 3, 2 y 1.","3\n2\n1","while"]
+],
+[
+["Crear una lista","Creá una lista con rojo, azul y verde. Mostrá cada elemento con print.","rojo\nazul\nverde","["],
+["Contar elementos","Creá una lista con tres elementos y mostrá su cantidad usando len().","3","len("]
+],
+[
+["Crear una función","Creá una función llamada saludar que muestre Hola. Ejecutala.","Hola","def"],
+["Función con parámetros","Creá una función sumar(a,b) que muestre la suma de 4 y 6.","10","def"]
+],
+[
+["Trabajar con texto","Creá una variable palabra con el texto Python y mostrá su longitud.","6","len("],
+["Cambiar mayúsculas","Convertí la palabra obraje a mayúsculas usando upper().","OBRAJE","upper("]
+],
+[
+["Usar diccionarios","Creá un diccionario con nombre: Ana y mostrá el valor de nombre.","Ana","{"],
+["Consultar datos","Creá un diccionario con edad: 15 y mostrá ese valor.","15","["]
+],
+[
+["Importar math","Importá math y mostrá el resultado de math.sqrt(25).","5.0","import math"],
+["Redondear","Usá round() para mostrar 3.14159 redondeado a dos decimales.","3.14","round("]
+],
+[
+["Manejar errores","Usá try y except para manejar un error y mostrar Error controlado.","Error controlado","except"],
+["Convertir datos","Convertí el texto 25 a número entero y sumale 5.","30","int("]
+],
+[
+["Crear un mini menú","Creá una variable opcion con valor jugar y mostrá ¡A jugar! si coincide.","¡A jugar!","if"],
+["Combinar conceptos","Usá una función y un bucle for para mostrar Hola dos veces.","Hola\nHola","def"]
+],
+[
+["Tu primer mini juego","Creá una variable secreta con valor 7. Si intento vale 7, mostrá ¡Ganaste!","¡Ganaste!","if"],
+["Desafío final","Creá una función llamada jugar que muestre ¡Juego iniciado! y ejecutala.","¡Juego iniciado!","def"]
+]
+];
+
+const levelNames=[
+"Primeros pasos","Variables","Matemática","Operaciones",
+"Condiciones","Decisiones","Bucle for","Bucle while",
+"Listas","Funciones","Textos","Diccionarios",
+"Módulos","Errores","Combinaciones","Crear juegos"
+];
+
+let state={xp:0,coins:0,done:[],unlocked:0};
+let currentLevel=0,currentExercise=0,pyodide=null,loading=false;
+
+function loadState(){
+ try{
+  const saved=JSON.parse(localStorage.getItem("obraje-save-v3"));
+  if(saved && Array.isArray(saved.done)){
+   state={xp:Number(saved.xp)||0,coins:Number(saved.coins)||0,done:saved.done,unlocked:Number(saved.unlocked)||0};
+  }
+ }catch(e){}
+ state.unlocked=Math.max(state.unlocked,0);
+}
+function saveState(){
+ localStorage.setItem("obraje-save-v3",JSON.stringify(state));
+}
+function updateStats(){
+ document.getElementById("xp").textContent=state.xp;
+ document.getElementById("coins").textContent=state.coins;
+ document.getElementById("completed").textContent=state.done.length;
+}
+function renderMap(){
+ const box=document.getElementById("levels");
+ box.innerHTML="";
+ levelNames.forEach((name,i)=>{
+  const done=state.done.includes(i*2)&&state.done.includes(i*2+1);
+  const unlocked=i<=state.unlocked;
+  const div=document.createElement("div");
+  div.className="level "+(done?"done":"")+(unlocked?"":" locked");
+  div.innerHTML=`<h3>${done?"🏆":unlocked?"🔓":"🔒"}</h3><b>Nivel ${i+1}</b><p>${name}</p><button ${unlocked?"":"disabled"}>Jugar</button>`;
+  div.querySelector("button").onclick=()=>startLevel(i);
+  box.appendChild(div);
+ });
+ updateStats();
+}
+function showMap(){
+ document.getElementById("practice").style.display="none";
+ document.getElementById("map").style.display="block";
+ renderMap();
+}
+function startLevel(level){
+ currentLevel=level;
+ currentExercise=state.done.includes(level*2)?1:0;
+ if(state.done.includes(level*2)&&state.done.includes(level*2+1)){
+  currentExercise=1;
+ }
+ document.getElementById("map").style.display="none";
+ document.getElementById("practice").style.display="block";
+ loadLesson();
+}
+function loadLesson(){
+ const ex=exercises[currentLevel][currentExercise];
+ document.getElementById("levelTitle").textContent=`Nivel ${currentLevel+1}: ${levelNames[currentLevel]}`;
+ document.getElementById("exerciseNumber").textContent=`Ejercicio ${currentExercise+1} de 2`;
+ document.getElementById("objective").textContent=ex[0];
+ document.getElementById("description").textContent=ex[1];
+ document.getElementById("code").value="";
+ document.getElementById("output").textContent="Todavía no ejecutaste tu programa.";
+ document.getElementById("feedback").textContent="🤖 ¡Vos podés! Leé el objetivo y escribí tu código.";
+ document.getElementById("hint").textContent="Escribí tu solución desde cero. ¡No te rindas!";
+ document.getElementById("next").style.display="none";
+ document.getElementById("verify").disabled=false;
+}
+function clearCode(){
+ document.getElementById("code").value="";
+}
+async function startPython(){
+ if(pyodide)return true;
+ if(loading){
+  while(loading&&!pyodide)await new Promise(r=>setTimeout(r,200));
+  return !!pyodide;
+ }
+ loading=true;
+ document.getElementById("feedback").textContent="⏳ Cargando Python... La primera vez puede tardar un poco.";
+ try{
+  pyodide=await loadPyodide();
+  loading=false;
+  return true;
+ }catch(e){
+  loading=false;
+  document.getElementById("feedback").textContent="No se pudo cargar Python. Revisá tu conexión a internet y recargá la página.";
+  return false;
+ }
+}
+function normalize(s){return s.replace(/\r/g,"").trim();}
+async function verifyCode(){
+ const code=document.getElementById("code").value;
+ const feedback=document.getElementById("feedback");
+ const output=document.getElementById("output");
+ const button=document.getElementById("verify");
+ const ex=exercises[currentLevel][currentExercise];
+ if(!code.trim()){
+  feedback.textContent="🤖 ¡Todavía no escribiste código! Probá con print() o con lo que aprendiste.";
+  return;
+ }
+ button.disabled=true;
+ feedback.textContent="⏳ MateBot está revisando tu programa...";
+ output.textContent="Ejecutando...";
+ const ready=await startPython();
+ if(!ready){button.disabled=false;return;}
+ try{
+  let result=await pyodide.runPythonAsync(`
+import sys
+from io import StringIO
+_buffer = StringIO()
+sys.stdout = _buffer
+try:
+ exec(${JSON.stringify(code)})
+except Exception as e:
+ print("ERROR:", type(e).__name__, str(e))
+sys.stdout = sys.__stdout__
+_buffer.getvalue()
+`);
+  const actual=String(result);
+  output.textContent=actual||"(Tu programa no mostró ningún resultado.)";
+  if(actual.startsWith("ERROR:")){
+   feedback.textContent="🤖 ¡Encontré un error! Revisá los nombres, los paréntesis y la indentación. Python te está avisando qué parte no entiende.";
+   button.disabled=false;
+   return;
+  }
+  const expected=ex[2];
+  const needle=ex[3];
+  if(normalize(actual)===normalize(expected)&&code.includes(needle)){
+   const id=currentLevel*2+currentExercise;
+   feedback.textContent="🎉 ¡GENIO! ¡Tu código funciona correctamente! MateBot está orgulloso de tu progreso.";
+   if(!state.done.includes(id)){
+    state.done.push(id);
+    state.xp+=50;
+    state.coins+=10;
+    celebrate();
+   }
+   if(currentExercise===0){
+    document.getElementById("next").textContent="Siguiente ejercicio ➜";
+   }else{
+    state.unlocked=Math.max(state.unlocked,Math.min(currentLevel+1,15));
+    document.getElementById("next").textContent=currentLevel===15?"Volver al mapa 🏆":"¡Nivel completado! Volver al mapa";
+   }
+   saveState();
+   updateStats();
+   document.getElementById("next").style.display="inline-block";
+  }else{
+   feedback.textContent=explainMistake(code,actual,expected,needle);
+   button.disabled=false;
+  }
+ }catch(e){
+  output.textContent=String(e);
+  feedback.textContent="🤖 Hubo un problema al ejecutar el código. Revisá la sintaxis e intentá de nuevo.";
+  button.disabled=false;
+ }
+}
+function explainMistake(code,actual,expected,needle){
+ if(!code.includes(needle)){
+  return `🤖 ¡Casi! Para este ejercicio necesitás trabajar con "${needle}". Revisá el objetivo y fijate cómo podés incorporarlo.`;
+ }
+ if(!actual.trim()){
+  return "🤖 Tu programa no mostró nada. ¿Te faltó usar print() para mostrar el resultado?";
+ }
+ if(normalize(actual)!==normalize(expected)){
+  return `🤖 ¡Buen intento! Tu resultado todavía no coincide con el esperado. Revisá los valores y las operaciones. Pista: el resultado esperado es ${expected.replace(/\n/g,", ")}.`;
+ }
+ return "🤖 ¡Estás cerca! Revisá que estés usando el concepto solicitado en el ejercicio.";
+}
+function nextExercise(){
+ if(currentExercise===0){
+  currentExercise=1;
+  loadLesson();
+ }else{
+  showMap();
+ }
+}
+function celebrate(){
+ const box=document.getElementById("confetti");
+ const colors=["#facc15","#ec4899","#4ade80","#60a5fa","#c084fc","#fb923c"];
+ for(let i=0;i<130;i++){
+  const p=document.createElement("div");
+  p.className="piece";
+  p.style.left=Math.random()*100+"%";
+  p.style.background=colors[Math.floor(Math.random()*colors.length)];
+  p.style.animationDelay=Math.random()*1.2+"s";
+  p.style.transform=`rotate(${Math.random()*360}deg)`;
+  box.appendChild(p);
+  setTimeout(()=>p.remove(),4500);
+ }
+}
+function resetAll(){
+ if(!confirm("¿Seguro que querés reiniciar todos tus niveles y tu progreso?"))return;
+ state={xp:0,coins:0,done:[],unlocked:0};
+ saveState();
+ showMap();
+}
+loadState();
+renderMap();
+</script>
+</body>
+</html>
