@@ -25,16 +25,38 @@ footer{text-align:center;color:#a5a0c9;padding:20px}#confetti{position:fixed;ins
 #levelCelebration{display:none;text-align:center;padding:20px;background:#393456;border:2px solid var(--yellow);border-radius:15px;margin-top:15px;animation:pop .45s ease-out}
 #levelCelebration img{display:block;width:100%;max-width:420px;margin:12px auto;border-radius:15px;border:4px solid var(--yellow)}
 @keyframes pop{from{transform:scale(.75);opacity:0}to{transform:scale(1);opacity:1}}
+/* Personajes pixel art */
+.character-panel{display:grid;grid-template-columns:130px 1fr;gap:16px;align-items:center;background:#302b50;border:2px solid #8b5cf6;border-radius:16px;padding:14px;margin:14px 0}
+.character-preview{width:112px;height:112px;background:#17152c;border:3px solid #facc15;border-radius:14px;display:grid;place-items:center}
+.pixel-sprite{width:96px;height:96px;image-rendering:pixelated;shape-rendering:crispEdges}
+.character-list,.shop-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:9px;margin-top:10px}
+.character-card,.shop-card{background:#393456;border:2px solid #514879;border-radius:12px;padding:10px;text-align:center}
+.character-card.selected{border-color:#4ade80;background:#244b48}
+.character-card .pixel-sprite{width:62px;height:62px}
+.shop-card .pixel-sprite{width:55px;height:55px}
+.character-card button,.shop-card button{width:100%;font-size:12px;padding:8px 5px}
+.shop-card p{font-size:13px;color:#ddd6fe;min-height:30px}
+.section-caption{color:#c4b5fd;margin:8px 0}
+@media(max-width:520px){.character-panel{grid-template-columns:1fr;text-align:center}.character-preview{margin:auto}}
 </style>
 </head>
 <body>
 <header><h1>🐍 Aprendiendo con el Obraje</h1><p>¡Convertite en un genio de Python!</p></header>
 <div class="stats">
-<div class="stat">⭐ XP: <b id="xp">0</b></div><div class="stat">🪙 Monedas: <b id="coins">0</b></div><div class="stat">🏅 Ejercicios: <b id="completed">0</b>/32</div>
+<div class="stat">⭐ XP: <b id="xp">0</b></div><div class="stat">💵 Pesos argentinos: <b id="coins">$ 0</b></div><div class="stat">🏅 Ejercicios: <b id="completed">0</b>/32</div>
 </div>
 <main>
 <section id="map" class="panel">
-<h2>🗺️ Mapa de aprendizaje</h2><p>Elegí un nivel desbloqueado y empezá a programar.</p>
+<h2>🧑‍🎤 Tu personaje</h2>
+<div class="character-panel">
+ <div class="character-preview" id="characterPreview" aria-label="Personaje seleccionado"></div>
+ <div><h3 id="characterName">Byte</h3><p id="characterDescription" class="small">Tu compañero de aventuras.</p><p class="small">Elegí tu personaje. ¡No cambia la dificultad ni da ventajas!</p></div>
+</div>
+<div id="characterChoices" class="character-list"></div>
+<h2 style="margin-top:22px">🛍️ Tienda del Obraje</h2>
+<p class="section-caption">Comprá personajes con los pesos que ganás programando. Messi se desbloquea al completar el nivel 10.</p>
+<div id="characterShop" class="shop-list"></div>
+<h2 style="margin-top:24px">🗺️ Mapa de aprendizaje</h2><p>Elegí un nivel desbloqueado y empezá a programar.</p>
 <div id="levels" class="levels"></div><br><button class="primary" onclick="resetAll()">🔄 Reiniciar todos los niveles</button>
 </section>
 <section id="practice" class="panel">
@@ -73,15 +95,79 @@ const exercises = [
 [["Tu primer mini juego","Creá una variable secreta con valor 7. Si intento vale 7, mostrá ¡Ganaste!","¡Ganaste!","if"],["Desafío final","Creá una función llamada jugar que muestre ¡Juego iniciado! y ejecutala.","¡Juego iniciado!","def"]]
 ];
 const levelNames=["Primeros pasos","Variables","Matemática","Operaciones","Condiciones","Decisiones","Bucle for","Bucle while","Listas","Funciones","Textos","Diccionarios","Módulos","Errores","Combinaciones","Crear juegos"];
-let state={xp:0,coins:0,done:[],unlocked:0};
+const characters=[
+ {id:"byte",name:"Byte",desc:"El aventurero del código.",skin:"#f1c7a5",hair:"#493126",shirt:"#38bdf8",pants:"#334155",extra:"#facc15",price:0},
+ {id:"chispa",name:"Chispa",desc:"¡Ideas que encienden todo!",skin:"#e9ad83",hair:"#ef7d32",shirt:"#facc15",pants:"#7c3aed",extra:"#fb7185",price:0},
+ {id:"pixel",name:"Pixel",desc:"Pequeño, creativo y veloz.",skin:"#d99b73",hair:"#28213b",shirt:"#a78bfa",pants:"#1e293b",extra:"#4ade80",price:0},
+ {id:"tilo",name:"Tilo",desc:"Tranquilidad para resolver bugs.",skin:"#f3c6a0",hair:"#9a6b3f",shirt:"#4ade80",pants:"#166534",extra:"#facc15",price:0},
+ {id:"rahlf",name:"Rahlf el Demoledor",desc:"Fuerza y valentía para programar.",skin:"#d99b73",hair:"#29233b",shirt:"#dc2626",pants:"#374151",extra:"#9ca3af",price:2500},
+ {id:"carpi",name:"Carpi",desc:"El carpincho más programador.",skin:"#a87550",hair:"#65432e",shirt:"#16a34a",pants:"#854d0e",extra:"#facc15",price:1800},
+ {id:"matebot",name:"MateBot",desc:"Un robot cebador de ideas.",skin:"#94a3b8",hair:"#64748b",shirt:"#0ea5e9",pants:"#475569",extra:"#facc15",price:2000,robot:true},
+ {id:"soledad",name:"Soledad",desc:"Con poncho argentino.",skin:"#e8b58f",hair:"#3b241d",shirt:"#b45309",pants:"#78350f",extra:"#60a5fa",poncho:true,price:3000},
+ {id:"nebula",name:"Nébula",desc:"Un toque de magia espacial.",skin:"#c4a1e8",hair:"#312052",shirt:"#7c3aed",pants:"#312e81",extra:"#f0abfc",price:3500},
+ {id:"messi",name:"Messi",desc:"¡La Pulga llega al Obraje! 🇦🇷",skin:"#d99b73",hair:"#513b2c",shirt:"#7dd3fc",pants:"#ffffff",extra:"#ffffff",price:0,messi:true}
+];
+let state={xp:0,pesos:0,done:[],unlocked:0,character:"byte",owned:["byte","chispa","pixel","tilo"]};
 let currentLevel=0,currentExercise=0,pyodide=null,loading=false;
 
 function loadState(){
- try{const saved=JSON.parse(localStorage.getItem("obraje-save-v3"));if(saved&&Array.isArray(saved.done)){state={xp:Number(saved.xp)||0,coins:Number(saved.coins)||0,done:saved.done,unlocked:Number(saved.unlocked)||0}}}catch(e){}
- state.unlocked=Math.max(state.unlocked,0);
+ try{
+  const saved=JSON.parse(localStorage.getItem("obraje-save-v3"));
+  if(saved&&Array.isArray(saved.done)){
+   state={xp:Number(saved.xp)||0,pesos:saved.currencyVersion===2?(Number(saved.pesos)||0):(Number(saved.coins)||0)*100,done:saved.done,unlocked:Number(saved.unlocked)||0,character:saved.character||"byte",owned:Array.isArray(saved.owned)?saved.owned:["byte","chispa","pixel","tilo"]};
+  }
+ }catch(e){}
+ if(!Array.isArray(state.owned))state.owned=["byte","chispa","pixel","tilo"];
+ if(!state.owned.includes("byte"))state.owned.unshift("byte");
+ if(state.done.includes(18)&&state.done.includes(19)&&!state.owned.includes("messi"))state.owned.push("messi");
+ if(!characters.some(c=>c.id===state.character&&state.owned.includes(c.id)))state.character=state.owned[0]||"byte";
 }
-function saveState(){localStorage.setItem("obraje-save-v3",JSON.stringify(state))}
-function updateStats(){document.getElementById("xp").textContent=state.xp;document.getElementById("coins").textContent=state.coins;document.getElementById("completed").textContent=state.done.length}
+function saveState(){localStorage.setItem("obraje-save-v3",JSON.stringify({...state,currencyVersion:2}))}
+function updateStats(){
+ document.getElementById("xp").textContent=state.xp;
+ document.getElementById("coins").textContent="$ "+new Intl.NumberFormat("es-AR",{maximumFractionDigits:0}).format(state.pesos);
+ document.getElementById("completed").textContent=state.done.length;
+}
+function pixelArtSvg(ch){
+ const rect=(x,y,w,h,color)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${color}"/>`;
+ let s="";
+ if(ch.robot){s+=rect(4,2,8,2,ch.extra)+rect(3,4,10,7,ch.skin)+rect(4,11,8,2,ch.shirt)+rect(5,6,2,2,"#111827")+rect(9,6,2,2,"#111827")+rect(6,9,4,1,"#111827");}
+ else{s+=rect(4,2,8,3,ch.hair)+rect(3,4,10,5,ch.skin)+rect(4,5,2,1,"#1f2937")+rect(10,5,2,1,"#1f2937")+rect(5,9,6,1,ch.skin)+rect(3,10,10,4,ch.shirt)+rect(4,14,3,2,ch.pants)+rect(9,14,3,2,ch.pants);}
+ if(ch.poncho)s+=rect(2,10,12,3,ch.extra)+rect(4,11,1,2,"#fef3c7")+rect(7,11,1,2,"#fef3c7")+rect(10,11,1,2,"#fef3c7");
+ if(ch.messi)s+=rect(3,10,10,1,"#ffffff")+rect(5,10,1,4,"#ffffff")+rect(10,10,1,4,"#ffffff");
+ if(ch.id==="carpi")s+=rect(3,1,2,2,ch.hair)+rect(11,1,2,2,ch.hair)+rect(6,8,1,1,"#fff");
+ else if(!ch.robot)s+=rect(2,3,2,2,ch.hair)+rect(12,3,2,2,ch.hair);
+ s+=rect(4,16,3,1,"#111827")+rect(9,16,3,1,"#111827");
+ return `<svg class="pixel-sprite" viewBox="0 0 16 18" role="img" aria-label="${ch.name}">${s}</svg>`;
+}
+function renderCharacters(){
+ const selected=characters.find(c=>c.id===state.character)||characters[0];
+ document.getElementById("characterPreview").innerHTML=pixelArtSvg(selected);
+ document.getElementById("characterName").textContent=selected.name;
+ document.getElementById("characterDescription").textContent=selected.desc;
+ const choices=document.getElementById("characterChoices");choices.innerHTML="";
+ state.owned.forEach(id=>{
+  const ch=characters.find(c=>c.id===id);if(!ch)return;
+  const card=document.createElement("div");card.className="character-card"+(id===state.character?" selected":"");
+  card.innerHTML=pixelArtSvg(ch)+`<b>${ch.name}</b><button type="button">${id===state.character?"Seleccionado":"Elegir"}</button>`;
+  card.querySelector("button").onclick=()=>{state.character=id;saveState();renderCharacters()};
+  choices.appendChild(card);
+ });
+ const shop=document.getElementById("characterShop");shop.innerHTML="";
+ characters.filter(c=>!["byte","chispa","pixel","tilo"].includes(c.id)).forEach(ch=>{
+  const owned=state.owned.includes(ch.id),unlocked=ch.id==="messi"&&state.done.includes(18)&&state.done.includes(19);
+  const card=document.createElement("div");card.className="shop-card";
+  card.innerHTML=pixelArtSvg(ch)+`<b>${ch.name}</b><p>${ch.desc}</p><button type="button" ${owned||(!unlocked&&ch.id==="messi")?"disabled":""}>${owned?"Desbloqueado":ch.id==="messi"?(unlocked?"¡Reclamar!":"🔒 Se desbloquea al completar nivel 10"):"$ "+new Intl.NumberFormat("es-AR").format(ch.price)}</button>`;
+  const btn=card.querySelector("button");
+  if(!owned){btn.onclick=()=>{
+   if(ch.id==="messi"){if(unlocked){state.owned.push("messi");state.character="messi";}}
+   else if(state.pesos>=ch.price){state.pesos-=ch.price;state.owned.push(ch.id);state.character=ch.id;}
+   else{alert("Todavía no tenés suficientes pesos. ¡Completá más ejercicios!");}
+   saveState();renderCharacters();updateStats();
+  };}
+  shop.appendChild(card);
+ });
+}
 function renderMap(){
  const box=document.getElementById("levels");box.innerHTML="";
  levelNames.forEach((name,i)=>{
@@ -89,7 +175,8 @@ function renderMap(){
   const div=document.createElement("div");div.className="level "+(done?"done":"")+(unlocked?"":" locked");
   div.innerHTML=`<h3>${done?"🏆":unlocked?"🔓":"🔒"}</h3><b>Nivel ${i+1}</b><p>${name}</p><button ${unlocked?"":"disabled"}>Jugar</button>`;
   div.querySelector("button").onclick=()=>startLevel(i);box.appendChild(div);
- });updateStats();
+ });
+ updateStats();renderCharacters();
 }
 function showMap(){document.getElementById("practice").style.display="none";document.getElementById("map").style.display="block";renderMap()}
 function startLevel(level){
@@ -142,10 +229,11 @@ _buffer.getvalue()
    const id=currentLevel*2+currentExercise,alreadyDone=state.done.includes(id);
    const levelWasComplete=state.done.includes(currentLevel*2)&&state.done.includes(currentLevel*2+1);
    feedback.textContent="🎉 ¡GENIO! ¡Tu código funciona correctamente! MateBot está orgulloso de tu progreso.";
-   if(!alreadyDone){state.done.push(id);state.xp+=50;state.coins+=10}
+   if(!alreadyDone){state.done.push(id);state.xp+=50;state.pesos+=1000}
    if(currentExercise===0){document.getElementById("next").textContent="Siguiente ejercicio ➜"}
    else{
     state.unlocked=Math.max(state.unlocked,Math.min(currentLevel+1,15));
+    if(currentLevel===9&&!state.owned.includes("messi"))state.owned.push("messi");
     document.getElementById("next").textContent=currentLevel===15?"Volver al mapa 🏆":"¡Nivel completado! Volver al mapa";
     if(!levelWasComplete){document.getElementById("levelCelebration").style.display="block";celebrate()}
    }
@@ -164,7 +252,10 @@ function celebrate(){
  const box=document.getElementById("confetti"),colors=["#facc15","#ec4899","#4ade80","#60a5fa","#c084fc","#fb923c"];
  for(let i=0;i<150;i++){const p=document.createElement("div");p.className="piece";p.style.left=Math.random()*100+"%";p.style.background=colors[Math.floor(Math.random()*colors.length)];p.style.animationDelay=Math.random()*1.2+"s";p.style.transform=`rotate(${Math.random()*360}deg)`;box.appendChild(p);setTimeout(()=>p.remove(),4500)}
 }
-function resetAll(){if(!confirm("¿Seguro que querés reiniciar todos tus niveles y tu progreso?"))return;state={xp:0,coins:0,done:[],unlocked:0};saveState();showMap()}
+function resetAll(){
+ if(!confirm("¿Seguro que querés reiniciar todos tus niveles y tu progreso?"))return;
+ state={xp:0,pesos:0,done:[],unlocked:0,character:"byte",owned:["byte","chispa","pixel","tilo"]};saveState();showMap()
+}
 loadState();renderMap();
 </script>
 </body>
